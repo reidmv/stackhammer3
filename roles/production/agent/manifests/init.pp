@@ -1,0 +1,3 @@
+class agent {
+  include 'ntp'
+}

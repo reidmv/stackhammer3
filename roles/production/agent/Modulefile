@@ -1,0 +1,4 @@
+name 'reidmv-agent'
+version '0.0.0'
+
+dependency 'saz/ntp', '>=2.0.3'
