@@ -1,7 +1,7 @@
-node test01 {
+node centos63a {
   include 'agent'
 }
 
-node node02 {
+node centos63b {
   include 'agent'
 }
