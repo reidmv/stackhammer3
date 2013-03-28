@@ -2,6 +2,12 @@
   "metaVersion": "1.1.6",
   "accessKey": "reid_pl_west2",
   "puppetVersion": "PUPPET_ENTERPRISE27",
+  "master": {
+    "type": "C1_MEDIUM",
+    "deployState": "RUNNING",
+    "image": "ami-ae61ea9e",
+    "name": "master"
+  },
   "environments": [
     {
       "siteLocation": "manifests",
