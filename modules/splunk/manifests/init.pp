@@ -5,7 +5,7 @@ class splunk inherits splunk::params {
     /(?i)windows/: { 
       include "splunk::windows_forwarder" 
       Exec {
-        path => "${::path}\;\"C:\\Program Files\\Splunk\\bin\""
+        path => "${::path};C:\\Program Files\\Splunk\\bin",
       }
     }
   }
