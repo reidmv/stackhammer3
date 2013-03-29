@@ -1,0 +1,18 @@
+#Fri Mar 29 17:54:19 UTC 2013
+SelectDefaultLast=Ignore
+ensureShouldAppearFirstInResource=Ignore
+booleansInStringForm=Ignore
+assignmentToVarNamedString=Warning
+unquotedResourceTitle=Ignore
+dqStringNotRequiredVar=Ignore
+puppetPath=lib/*\:environments/$environment/*\:manifests/*\:modules/*\:roles/$environment/*
+CaseDefaultLast=Ignore
+puppetEnvironment=production
+missingDefault=Warning
+circularModuleDependency=Warning
+unbracedInterpolation=Ignore
+rightToLeftRelationships=Ignore
+problemInterpolatedHyphen=Warning
+mlComments=Ignore
+puppetVersion=PE 2.7
+dqStringNotRequired=Ignore
