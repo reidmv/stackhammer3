@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -x
+
+read servers
+while read server; do
+  servers="${servers}|${server}"
+done
+
+mco rpc --agent app --action upgrade --arg version=$1 -I "/$servers/" 1>&2
+
+echo $servers | tr '|' '\n'

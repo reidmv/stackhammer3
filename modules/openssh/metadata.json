@@ -1,0 +1,26 @@
+{
+  "name": "reidmv-openssh",
+  "version": "0.0.2",
+  "source": "git://github.com/reidmv/puppet-module-openssh",
+  "author": "reidmv",
+  "license": "Apache License, Version 2.0",
+  "summary": "This module provides a basic example of the Package-File-Service pattern in Puppet",
+  "description": "This module provides a basic example of the Package-File-Service pattern in Puppet",
+  "project_page": "https://github.com/reidmv/puppet-module-openssh",
+  "dependencies": [
+
+  ],
+  "types": [
+
+  ],
+  "checksums": {
+    "Modulefile": "67f1daeaf5ac0c3b7dacf29f9a55bda3",
+    "README.md": "0f4a4dc212e2a519072f8a7dd77f7146",
+    "files/debian/sshd_config": "0984c9dfb77dcbabafa9a33be084b610",
+    "files/redhat/sshd_config": "0984c9dfb77dcbabafa9a33be084b610",
+    "manifests/debian.pp": "1ff7a4a26697a40e12139f15a3255778",
+    "manifests/init.pp": "80d532d31151912111244fdbce9b8730",
+    "manifests/redhat.pp": "253a559f806bfd620a31b9d8d68e6be2",
+    "tests/ssh.pp": "423466ae46899d6a0480aa9910b096d2"
+  }
+}
