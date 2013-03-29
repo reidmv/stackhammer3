@@ -1,0 +1,9 @@
+name 'reidmv-seteam'
+version '0.0.1'
+
+author 'Puppet Labs SE Team'
+license 'Apache 2.0'
+project_page 'https://github.com/puppetlabs-seteam/puppet-module-seteam'
+source 'https://github.com/puppetlabs-seteam/puppet-module-seteam'
+summary 'Self-contained Puppet Enterprise demonstration stack roles'
+description 'See summary'
