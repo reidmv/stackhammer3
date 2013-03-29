@@ -103,6 +103,17 @@
             "created_at": "2013-03-28T23:42:50Z",
             "updated_at": "2013-03-28T23:44:26Z"
           }
+        },
+        {
+          "node": {
+            "name": "master",
+            "assigned_node_group_ids": [],
+            "assigned_node_class_ids": [
+              6
+            ],
+            "created_at": "2013-03-28T23:42:50Z",
+            "updated_at": "2013-03-28T23:44:32Z"
+          }
         }
       ],
       "groupContributions": [
