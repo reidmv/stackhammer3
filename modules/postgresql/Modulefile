@@ -1,9 +1,0 @@
-name 'reidmv-postgresql'
-version '0.0.1'
-
-author 'reidmv'
-license 'Apache 2.0'
-project_page ''
-source ''
-summary 'Stub postgresql module'
-description 'Stubs out postgresql for dependency reasons; no-op.'
