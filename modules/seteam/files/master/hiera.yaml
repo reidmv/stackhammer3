@@ -1,0 +1,11 @@
+---
+:backends:
+  - yaml
+
+:hierarchy:
+  - %{fqdn}
+  - %{operatingsystem}
+  - common
+
+:yaml:
+  :datadir: /etc/puppetlabs/puppet/hieradata
