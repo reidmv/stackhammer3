@@ -1,5 +1,5 @@
-name 'reidmv-postgresql'
-version '0.0.1'
+name 'puppetlabs-postgresql'
+version '2.6.66'
 
 author 'reidmv'
 license 'Apache 2.0'
