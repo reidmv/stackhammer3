@@ -5,42 +5,24 @@ class tomcat(
   $war_source             = $tomcat::params::war_source
 ) inherits tomcat::params {
 
-  # This class makes use of the staging::file defined type in order to take
-  # advantage of a centrally defined file staging directory. Specifically,
-  # $staging::path. In Puppet at the time of writing, however, parse order is
-  # important when it comes to defining and using variables. For this class to
-  # work as expected, Class['staging'] needs to be parsed *before* this class
-  # is. Because of how important this parse order is to expected behavior, a
-  # warning will be issued on both the server and agent if this class is parsed
-  # before Class['staging'] has been declared.
   #
-  # Good: (assume Class['profile::staging'] declares Class['staging'])
-  #
-  #  include profile::staging
-  #  include 7zip
-  #
-  # Bad:
-  #
-  #  include 7zip
-  #  include profile::staging
-  #
-  if ! defined(Class['staging']) {
-    $message_array = [
-      "Parse order error: Class['${name}'] uses Class['staging'] in a ",
-      "parse-order dependent fashion. As such, Class['staging'] should be ",
-      "defined BEFORE Class['${name}']. Without resolution, unexpected ",
-      "behavior could result from the current configuration.",
-    ]
-    warning("${message_array}")
-    notify { "Class['${name}'] warning": message => "${message_array}"; }
+  # Staging Module Setup
+  # profile::staging sets up everything in /var/staging
+  include profile::staging
+
+  staging::file{ $tomcat_tarball:
+    source => "${war_source}/${tomcat_tarball}",
   }
 
-  staging::deploy { $tomcat_tarball:
-    source  => "${war_source}/${tomcat_tarball}",
+  staging::extract{ $tomcat_tarball:
     target  => "/opt/tomcat",
     creates => "/opt/tomcat/${tomcat_current_version}",
-    require => File["/opt/tomcat"],
+    require => [
+      Staging::File[$tomcat_tarball],
+      File["/opt/tomcat"]
+    ]
   }
+
 
   #
   # Tomcat Setup and Dependencies

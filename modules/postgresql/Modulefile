@@ -1,9 +1,0 @@
-name 'puppetlabs-postgresql'
-version '2.0.666'
-
-author 'reidmv'
-license 'Apache 2.0'
-project_page ''
-source ''
-summary 'Stub postgresql module'
-description 'Stubs out postgresql for dependency reasons; no-op.'

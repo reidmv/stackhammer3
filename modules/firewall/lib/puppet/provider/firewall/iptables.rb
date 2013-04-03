@@ -17,31 +17,16 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
   has_feature :reject_type
   has_feature :log_level
   has_feature :log_prefix
-  has_feature :mark
-  has_feature :tcp_flags
-  has_feature :pkttype
-  has_feature :socket
 
-  optional_commands({
-    :iptables => '/sbin/iptables',
-    :iptables_save => '/sbin/iptables-save',
-  })
+  commands :iptables => '/sbin/iptables'
+  commands :iptables_save => '/sbin/iptables-save'
 
   defaultfor :kernel => :linux
-
-  iptables_version = Facter.fact('iptables_version').value
-  if (iptables_version and Puppet::Util::Package.versioncmp(iptables_version, '1.4.1') < 0)
-    mark_flag = '--set-mark'
-  else
-    mark_flag = '--set-xmark'
-  end
-
-  @protocol = "IPv4"
 
   @resource_map = {
     :burst => "--limit-burst",
     :destination => "-d",
-    :dport => ["-m multiport --dports", "-m (udp|tcp) --dport"],
+    :dport => "-m multiport --dports",
     :gid => "-m owner --gid-owner",
     :icmp => "-m icmp --icmp-type",
     :iniface => "-i",
@@ -54,38 +39,23 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
     :port => '-m multiport --ports',
     :proto => "-p",
     :reject => "--reject-with",
-    :set_mark => mark_flag,
-    :socket => "-m socket",
     :source => "-s",
-    :sport => ["-m multiport --sports", "-m (udp|tcp) --sport"],
     :state => "-m state --state",
+    :sport => "-m multiport --sports",
     :table => "-t",
-    :tcp_flags => "-m tcp --tcp-flags",
     :todest => "--to-destination",
     :toports => "--to-ports",
     :tosource => "--to-source",
     :uid => "-m owner --uid-owner",
-    :pkttype => "-m pkttype --pkt-type"
   }
-
-  # Create property methods dynamically
-  (@resource_map.keys << :chain << :table << :action).each do |property|
-    define_method "#{property}" do
-      @property_hash[property.to_sym]
-    end
-
-    define_method "#{property}=" do |value|
-      @property_hash[:needs_change] = true
-    end
-  end
 
   # This is the order of resources as they appear in iptables-save output,
   # we need it to properly parse and apply rules, if the order of resource
   # changes between puppet runs, the changed rules will be re-applied again.
   # This order can be determined by going through iptables source code or just tweaking and trying manually
   @resource_list = [:table, :source, :destination, :iniface, :outiface,
-    :proto, :tcp_flags, :gid, :uid, :sport, :dport, :port, :socket, :pkttype, :name, :state, :icmp, :limit, :burst,
-    :jump, :todest, :tosource, :toports, :log_level, :log_prefix, :reject, :set_mark]
+    :proto, :gid, :uid, :sport, :dport, :port, :name, :state, :icmp, :limit, :burst,
+    :jump, :todest, :tosource, :toports, :log_level, :log_prefix, :reject]
 
   def insert
     debug 'Inserting rule %s' % resource[:name]
@@ -113,7 +83,6 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
       notice("Properties changed - updating rule")
       update
     end
-    persist_iptables(self.class.instance_variable_get(:@protocol))
     @property_hash.clear
   end
 
@@ -125,7 +94,7 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
 
     # String#lines would be nice, but we need to support Ruby 1.8.5
     iptables_save.split("\n").each do |line|
-      unless line =~ /^\#\s+|^\:\S+|^COMMIT|^FATAL/
+      unless line =~ /^\#\s+|^\:\S+|^COMMIT/
         if line =~ /^\*/
           table = line.sub(/\*/, "")
         else
@@ -144,35 +113,9 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
     keys = []
     values = line.dup
 
-    # These are known booleans that do not take a value, but we want to munge
-    # to true if they exist.
-    known_booleans = [:socket]
-
-    ####################
-    # PRE-PARSE CLUDGING
-    ####################
-
-    # --tcp-flags takes two values; we cheat by adding " around it
-    # so it behaves like --comment
-    values = values.sub(/--tcp-flags (\S*) (\S*)/, '--tcp-flags "\1 \2"')
-
-    # Trick the system for booleans
-    known_booleans.each do |bool|
-      values = values.sub(/#{@resource_map[bool]}/, '-m socket true')
-    end
-
-    ############
-    # MAIN PARSE
-    ############
-
-    # Here we iterate across our values to generate an array of keys
     @resource_list.reverse.each do |k|
-      resource_map_key = @resource_map[k]
-      [resource_map_key].flatten.each do |opt|
-        if values.slice!(/\s#{opt}/)
-          keys << k
-          break
-        end
+      if values.slice!(/\s#{@resource_map[k]}/)
+        keys << k
       end
     end
 
@@ -180,31 +123,10 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
     values.slice!('-A')
     keys << :chain
 
-    # Here we generate the main hash
     keys.zip(values.scan(/"[^"]*"|\S+/).reverse) { |f, v| hash[f] = v.gsub(/"/, '') }
-
-    #####################
-    # POST PARSE CLUDGING
-    #####################
-
-    # Normalise all rules to CIDR notation.
-    [:source, :destination].each do |prop|
-      hash[prop] = Puppet::Util::IPCidr.new(hash[prop]).cidr unless hash[prop].nil?
-    end
 
     [:dport, :sport, :port, :state].each do |prop|
       hash[prop] = hash[prop].split(',') if ! hash[prop].nil?
-    end
-
-    # Convert booleans removing the previous cludge we did
-    known_booleans.each do |bool|
-      if hash[bool] != nil then
-        if hash[bool] == "true" then
-          hash[bool] = true
-        else
-          raise "Parser error: #{bool} was meant to be a boolean but received value: #{hash[bool]}."
-        end
-      end
     end
 
     # Our type prefers hyphens over colons for ranges so ...
@@ -289,14 +211,10 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
       end
     end
 
-    line.unshift("-t", properties[:table])
-
     # Return array without nils
     line.compact
   end
 
-  # This method takes the resource, and attempts to generate the command line
-  # arguments for iptables.
   def general_args
     debug "Current resource: %s" % resource.class
 
@@ -308,10 +226,6 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
       resource_value = nil
       if (resource[res]) then
         resource_value = resource[res]
-        # If socket is true then do not add the value as -m socket is standalone
-        if res == :socket then
-          resource_value = nil
-        end
       elsif res == :jump and resource[:action] then
         # In this case, we are substituting jump for action
         resource_value = resource[:action].to_s.upcase
@@ -319,7 +233,7 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
         next
       end
 
-      args << [resource_map[res]].flatten.first.split(' ')
+      args << resource_map[res].split(' ')
 
       # For sport and dport, convert hyphens to colons since the type
       # expects hyphens for ranges of ports.
@@ -329,16 +243,9 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
         end
       end
 
-      # our tcp_flags takes a single string with comma lists separated
-      # by space
-      # --tcp-flags expects two arguments
-      if res == :tcp_flags
-        one, two = resource_value.split(' ')
-        args << one
-        args << two
-      elsif resource_value.is_a?(Array)
+      if resource_value.is_a?(Array)
         args << resource_value.join(',')
-      elsif !resource_value.nil?
+      else
         args << resource_value
       end
     end
@@ -350,11 +257,9 @@ Puppet::Type.type(:firewall).provide :iptables, :parent => Puppet::Provider::Fir
     debug("[insert_order]")
     rules = []
 
-    # Find list of current rules based on chain and table
+    # Find list of current rules based on chain
     self.class.instances.each do |rule|
-      if rule.chain == resource[:chain].to_s and rule.table == resource[:table].to_s
-        rules << rule.name
-      end
+      rules << rule.name if rule.chain == resource[:chain].to_s
     end
 
     # No rules at all? Just bail now.

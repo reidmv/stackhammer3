@@ -10,9 +10,6 @@ class ntp::params {
       $config_file_owner = 'root'
       $config_file_group = 'root'
       $config_file_mode  = '0644'
-      $defaults_file = '/etc/default/ntp'
-      $defaults_file_tpl = 'ntp.defaults.debian.erb'
-      $ntpd_start_options = '-g'
     }
     'RedHat': {
       $service_name = 'ntpd'
@@ -20,9 +17,6 @@ class ntp::params {
       $config_file_owner = 'root'
       $config_file_group = 'root'
       $config_file_mode  = '0644'
-      $defaults_file = '/etc/sysconfig/ntpd'
-      $defaults_file_tpl = 'ntp.defaults.redhat.erb'
-      $ntpd_start_options = '-u ntp:ntp -p /var/run/ntpd.pid -g'
     }
     'Suse': {
       $service_name = 'ntp'

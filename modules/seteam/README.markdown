@@ -1,3 +1,0 @@
-# demo #
-
-This is the demo module. It provides...

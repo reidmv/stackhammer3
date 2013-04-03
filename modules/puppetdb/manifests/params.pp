@@ -11,28 +11,10 @@
 # Sample Usage:
 #
 class puppetdb::params {
-  $listen_address            = 'localhost'
-  $listen_port               = '8080'
-  $open_listen_port          = false
-  $ssl_listen_address        = $::clientcert
-  $ssl_listen_port           = '8081'
-  # This technically defaults to 'true', but in order to preserve backwards
-  # compatibility with the deprecated 'manage_redhat_firewall' parameter, we
-  # need to specify 'undef' as the default so that we can tell whether or
-  # not the user explicitly specified a value.  See implementation in
-  # `firewall.pp`.  We should change this back to `true` when we get rid
-  # of `manage_redhat_firewall`.
-  $open_ssl_listen_port      = undef
-  $postgres_listen_addresses = 'localhost'
-  # This technically defaults to 'true', but in order to preserve backwards
-  # compatibility with the deprecated 'manage_redhat_firewall' parameter, we
-  # need to specify 'undef' as the default so that we can tell whether or
-  # not the user explicitly specified a value.  See implementation in
-  # `postgresql.pp`.  We should change this back to `true` when we get rid
-  # of `manage_redhat_firewall`.
-  $open_postgres_port        = undef
+  $ssl_listen_address    = $::clientcert
+  $ssl_listen_port       = '8081'
 
-  $database                  = 'postgres'
+  $database          = 'postgres'
 
   # The remaining database settings are not used for an embedded database
   $database_host          = 'localhost'
@@ -44,7 +26,7 @@ class puppetdb::params {
   $puppetdb_version       = 'present'
 
   # TODO: figure out a way to make this not platform-specific
-  $manage_redhat_firewall = undef
+  $manage_redhat_firewall = true
 
   $gc_interval            = '60'
 

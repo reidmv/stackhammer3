@@ -1,9 +1,16 @@
 class profile::apache {
-
-  # The main point of having this in a profile is that we have a central point
-  # to set the class parameters. Right now we're comfortable with the defaults.
   class { '::apache': }
+  apache::vhost { $::hostname:
+    port    => '80',
+    docroot => '/var/www/html',
+  }
+  
+  file { ['/var/www', '/var/www/html']:
+    ensure => directory,
+  }
 
-  include apache::mod::php
-
+  file { '/var/www/html/index.html':
+    ensure => present,
+    content => template('profile/apache/index.html.erb'),
+  }
 }

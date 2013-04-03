@@ -3,8 +3,6 @@
 
 define apt::pin(
   $ensure     = present,
-  $explanation = "${::caller_module_name}: ${name}",
-  $order      = '',
   $packages   = '*',
   $priority   = 0,
   $release    = '',
@@ -16,10 +14,6 @@ define apt::pin(
   include apt::params
 
   $preferences_d = $apt::params::preferences_d
-
-  if $order != '' and !is_integer($order) {
-    fail('Only integers are allowed in the apt::pin order param')
-  }
 
   if $release != '' {
     $pin = "release a=${release}"
@@ -33,13 +27,9 @@ define apt::pin(
     $pin = "release a=${name}"
   }
 
-  $path = $order ? {
-    ''      => "${preferences_d}/${name}.pref",
-    default => "${preferences_d}/${order}-${name}.pref",
-  }
   file { "${name}.pref":
     ensure  => $ensure,
-    path    => $path,
+    path    => "${preferences_d}/${name}.pref",
     owner   => root,
     group   => root,
     mode    => '0644',
