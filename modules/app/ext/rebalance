@@ -1,7 +1,0 @@
-#!/bin/sh
-
-mco rpc --agent app --action app::balancer -C roundrobin 1>&2
-
-while read line; do
-  echo $line
-done
