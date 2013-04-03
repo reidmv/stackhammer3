@@ -13,6 +13,7 @@ class splunk::linux_forwarder {
 
   package {'splunkforwarder':
     ensure   => present,
+    provider => $pkg_provider,
     source   => "/var/staging/splunk/${splunkforwarder_pkg}",
     require  => Staging::File["${splunkforwarder_pkg}"],
   }
@@ -31,7 +32,7 @@ class splunk::linux_forwarder {
   }
   
   exec {"set_monitor_default":
-    unless  => "/bin/grep \"/var/log\" /opt/splunkforwarder/etc/apps/search/local/inputs.conf",
+    unless  => "/bin/grep \"\/var\/log\" /opt/splunkforwarder/etc/apps/search/local/inputs.conf",
     command => "/opt/splunkforwarder/bin/splunk add monitor \"/var/log/\" -auth ${splunk::params::splunk_admin}:${splunk::params::splunk_admin_pass}",
     require => Exec['license_splunk','enable_splunk'],
   }

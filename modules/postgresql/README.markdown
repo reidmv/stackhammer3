@@ -1,3 +1,0 @@
-# postgresql #
-
-This is the postgresql module. It provides...

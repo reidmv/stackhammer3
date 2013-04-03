@@ -1,0 +1,43 @@
+#!/bin/sh
+
+count=$1
+oldversion=$2
+newversion=$3
+
+nodes=`./select 2 -F env=production -F app_version=$oldversion`
+
+echo "======================================================"
+echo "Migrate nodes to staging environment"
+echo
+./migrate staging <<-EOF
+$nodes
+EOF
+
+echo "======================================================"
+echo "Remove nodes from pool"
+echo
+./rebalance < /dev/null
+
+echo "======================================================"
+echo "Wait until some specified condition is met (simulated)"
+echo
+sleep 2
+
+echo "======================================================"
+echo "Upgrade app on nodes"
+echo
+./upgrade $newversion <<-EOF
+$nodes
+EOF
+
+echo "======================================================"
+echo "Migrate nodes back to production environment"
+echo
+./migrate production <<-EOF
+$nodes
+EOF
+
+echo "======================================================"
+echo "Re-add nodes to pool"
+echo
+./rebalance < /dev/null

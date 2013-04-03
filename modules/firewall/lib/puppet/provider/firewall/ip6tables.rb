@@ -12,24 +12,9 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
   has_feature :reject_type
   has_feature :log_level
   has_feature :log_prefix
-  has_feature :mark
-  has_feature :tcp_flags
-  has_feature :pkttype
 
-  optional_commands({
-    :ip6tables      => '/sbin/ip6tables',
-    :ip6tables_save => '/sbin/ip6tables-save',
-  })
-
-  def self.iptables(*args)
-    ip6tables(*args)
-  end
-
-  def self.iptables_save(*args)
-    ip6tables_save(*args)
-  end
-
-  @protocol = "IPv6"
+  commands :iptables      => '/sbin/ip6tables'
+  commands :iptables_save => '/sbin/ip6tables-save'
 
   @resource_map = {
     :burst => "--limit-burst",
@@ -39,7 +24,7 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
     :icmp => "-m icmp6 --icmpv6-type",
     :iniface => "-i",
     :jump => "-j",
-    :limit => "-m limit --limit",
+    :limit => "--limit",
     :log_level => "--log-level",
     :log_prefix => "--log-prefix",
     :name => "-m comment --comment",
@@ -55,26 +40,14 @@ Puppet::Type.type(:firewall).provide :ip6tables, :parent => :iptables, :source =
     :toports => "--to-ports",
     :tosource => "--to-source",
     :uid => "-m owner --uid-owner",
-    :pkttype => "-m pkttype --pkt-type"
   }
-
-  # Create property methods dynamically
-  (@resource_map.keys << :chain << :table << :action).each do |property|
-    define_method "#{property}" do
-      @property_hash[property.to_sym]
-    end
-
-    define_method "#{property}=" do |value|
-      @property_hash[:needs_change] = true
-    end
-  end
 
   # This is the order of resources as they appear in iptables-save output,
   # we need it to properly parse and apply rules, if the order of resource
   # changes between puppet runs, the changed rules will be re-applied again.
   # This order can be determined by going through iptables source code or just tweaking and trying manually
   @resource_list = [:table, :source, :destination, :iniface, :outiface,
-    :proto, :gid, :uid, :sport, :dport, :port, :pkttype, :name, :state, :icmp, :limit, :burst, :jump,
+    :proto, :gid, :uid, :sport, :dport, :port, :name, :state, :icmp, :limit, :burst, :jump,
     :todest, :tosource, :toports, :log_level, :log_prefix, :reject]
 
 end

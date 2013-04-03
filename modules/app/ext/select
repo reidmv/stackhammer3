@@ -1,0 +1,5 @@
+#!/bin/sh
+
+number=$1
+shift 1
+mco ping "$@" | awk '/^$/{ exit } { print $1 }' | head -n $number
