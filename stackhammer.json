@@ -14,13 +14,6 @@
         },
         {
           "node_class": {
-            "name": "ntp",
-            "created_at": "2013-03-29T16:38:26Z",
-            "updated_at": "2013-03-29T16:38:26Z"
-          }
-        },
-        {
-          "node_class": {
             "name": "pe_accounts",
             "created_at": "2013-03-28T23:40:04Z",
             "updated_at": "2013-03-28T23:40:04Z"
@@ -56,9 +49,30 @@
         },
         {
           "node_class": {
+            "name": "profile::dashboard",
+            "created_at": "2013-04-03T23:54:36Z",
+            "updated_at": "2013-04-03T23:54:36Z"
+          }
+        },
+        {
+          "node_class": {
+            "name": "profile::tomcat::jenkins",
+            "created_at": "2013-04-03T21:42:46Z",
+            "updated_at": "2013-04-03T21:52:24Z"
+          }
+        },
+        {
+          "node_class": {
             "name": "seteam::master",
             "created_at": "2013-03-29T18:26:44Z",
             "updated_at": "2013-03-29T18:26:44Z"
+          }
+        },
+        {
+          "node_class": {
+            "name": "tomcat",
+            "created_at": "2013-04-03T21:39:56Z",
+            "updated_at": "2013-04-03T21:39:56Z"
           }
         }
       ],
@@ -93,20 +107,33 @@
             "created_at": "2013-03-28T23:42:50Z",
             "updated_at": "2013-03-28T23:42:50Z"
           }
+        },
+        {
+          "node_group": {
+            "name": "Tomcat",
+            "assigned_node_group_ids": [],
+            "assigned_node_class_ids": [
+              9
+            ],
+            "created_at": "2013-04-03T21:42:29Z",
+            "updated_at": "2013-04-03T21:42:29Z"
+          }
+        },
+        {
+          "node_group": {
+            "name": "Tomcat Jenkins",
+            "assigned_node_group_ids": [
+              5
+            ],
+            "assigned_node_class_ids": [
+              10
+            ],
+            "created_at": "2013-04-03T21:52:42Z",
+            "updated_at": "2013-04-03T21:52:57Z"
+          }
         }
       ],
       "nodes": [
-        {
-          "node": {
-            "name": "centos63a",
-            "assigned_node_group_ids": [],
-            "assigned_node_class_ids": [
-              6
-            ],
-            "created_at": "2013-03-28T23:42:50Z",
-            "updated_at": "2013-04-03T20:00:11Z"
-          }
-        },
         {
           "node": {
             "name": "centos63b",
@@ -115,7 +142,18 @@
               6
             ],
             "created_at": "2013-03-28T23:42:50Z",
-            "updated_at": "2013-04-03T20:00:11Z"
+            "updated_at": "2013-04-03T22:13:01Z"
+          }
+        },
+        {
+          "node": {
+            "name": "centos63a",
+            "assigned_node_group_ids": [],
+            "assigned_node_class_ids": [
+              6
+            ],
+            "created_at": "2013-03-28T23:42:50Z",
+            "updated_at": "2013-04-03T22:12:58Z"
           }
         }
       ],
@@ -135,17 +173,25 @@
             "created_at": "2013-03-28T23:41:23Z",
             "updated_at": "2013-03-28T23:41:23Z"
           }
+        },
+        {
+          "node_group_class_membership": {
+            "node_group_id": 5,
+            "node_class_id": 9,
+            "created_at": "2013-04-03T21:42:29Z",
+            "updated_at": "2013-04-03T21:42:29Z"
+          }
+        },
+        {
+          "node_group_class_membership": {
+            "node_group_id": 6,
+            "node_class_id": 10,
+            "created_at": "2013-04-03T21:52:42Z",
+            "updated_at": "2013-04-03T21:52:42Z"
+          }
         }
       ],
       "nodeContributions": [
-        {
-          "node_class_membership": {
-            "node_id": 2,
-            "node_class_id": 6,
-            "created_at": "2013-03-28T23:42:54Z",
-            "updated_at": "2013-03-28T23:42:54Z"
-          }
-        },
         {
           "node_class_membership": {
             "node_id": 3,
@@ -153,9 +199,27 @@
             "created_at": "2013-03-28T23:42:54Z",
             "updated_at": "2013-03-28T23:42:54Z"
           }
+        },
+        {
+          "node_class_membership": {
+            "node_id": 2,
+            "node_class_id": 6,
+            "created_at": "2013-03-28T23:42:54Z",
+            "updated_at": "2013-03-28T23:42:54Z"
+          }
         }
       ],
-      "lastSync": "2013-04-03T21:34:21Z"
+      "subGroups": [
+        {
+          "node_group_edge": {
+            "from_id": 6,
+            "to_id": 5,
+            "created_at": "2013-04-03T21:52:42Z",
+            "updated_at": "2013-04-03T21:52:42Z"
+          }
+        }
+      ],
+      "lastSync": "2013-04-03T23:56:30Z"
     },
     "type": "C1_MEDIUM",
     "deployState": "RUNNING",
